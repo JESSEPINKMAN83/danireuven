@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Markdown Dual View</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <!-- Marked (Markdown → HTML) & Highlight.js (syntax highlighting) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
@@ -399,7 +400,7 @@
     }
 
     .custom-view th {
-      background: #f9fafb;
+      background: #F5F3FF;
       font-weight: 600;
       color: #374151;
     }
@@ -537,7 +538,10 @@
       <div class="pane" id="rightPane">
         <div class="pane-header">
           <span>🎨 Custom Styled Preview</span>
-          <span id="headingCount">0 headings</span>
+          <div>
+            <span id="headingCount" style="margin-right: 1rem; color: #64748b; font-size: 0.875rem;">0 headings</span>
+            <button id="downloadMdBtn" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.375rem; cursor: pointer; font-weight: 500; font-size: 0.875rem;">💾 Download .md</button>
+          </div>
         </div>
         <div class="pane-content has-custom">
           <div id="rendered" class="custom-view">
@@ -561,7 +565,7 @@
 
     let currentMarkdown = '';
 
-    const sampleMd = `# 🇬🇧 London Adventure Guide
+    const sampleMd = `# 🇬🇧  London Adventure Guide
 *August 2-6, 2024 | 5 Days of British Magic*
 
 ---
@@ -640,7 +644,7 @@ London, the beating heart of Britain, where ancient history meets cutting-edge i
 - 🚶 **20:00** - Evening walk along South Bank
 - 🎡 **21:00** - London Eye night ride (pre-booked)
 
-<iframe width="100%" height="315" src="https://www.youtube.com/embed/sv5yLKKBcKw" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/7-uXcpfHLGI" frameborder="0" allowfullscreen></iframe>
 *Experience the Changing of the Guard ceremony at Buckingham Palace*
 
 ---
@@ -668,7 +672,7 @@ London, the beating heart of Britain, where ancient history meets cutting-edge i
 - 🎪 **20:30** - Street performers at Covent Garden
 - 🍸 **21:30** - Cocktails at Sketch (pink room)
 
-<iframe width="100%" height="315" src="https://www.youtube.com/embed/k8sKXhXkJlY" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/ztj2h0Fcs6k" frameborder="0" allowfullscreen></iframe>
 *Explore the vibrant Borough Market - London's foodie paradise*
 
 ---
@@ -697,7 +701,7 @@ London, the beating heart of Britain, where ancient history meets cutting-edge i
 - 🛍️ **20:30** - Evening shopping at Covent Garden
 - 🍺 **21:30** - Nightcap at The Lamb & Flag pub
 
-<iframe width="100%" height="315" src="https://www.youtube.com/embed/3CYCQ2JXx9s" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/tWJVv79L9o4" frameborder="0" allowfullscreen></iframe>
 *Discover the treasures of the British Museum - history comes alive*
 
 ---
@@ -727,7 +731,7 @@ London, the beating heart of Britain, where ancient history meets cutting-edge i
 - 🍸 **22:30** - Post-show drinks in Theatreland
 - 🚶 **23:00** - Walk home through illuminated Covent Garden
 
-<iframe width="100%" height="315" src="https://www.youtube.com/embed/Tt3HiyfBHSU" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/kFPiAOaw1n4" frameborder="0" allowfullscreen></iframe>
 *Step into the magical world of Harry Potter at Warner Bros Studio Tour*
 
 ---
@@ -757,7 +761,7 @@ London, the beating heart of Britain, where ancient history meets cutting-edge i
 - 🥂 **21:00** - Champagne toast at American Bar, Savoy Hotel
 - 🌃 **22:00** - Final night walk along the Thames
 
-<iframe width="100%" height="315" src="https://www.youtube.com/embed/kJlbCzYiYjE" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/0dLH0hdrfCE" frameborder="0" allowfullscreen></iframe>
 *Experience London's vibrant street art scene in trendy Shoreditch*
 
 ---
@@ -932,6 +936,27 @@ London, the beating heart of Britain, where ancient history meets cutting-edge i
     // Event listeners
     rawTab.addEventListener('click', () => switchLeftPaneTab('raw'));
     plainTab.addEventListener('click', () => switchLeftPaneTab('plain'));
+
+    document.getElementById("downloadMdBtn").addEventListener("click", function() {
+      if (!currentMarkdown) {
+        alert("No content to download!");
+        return;
+      }
+      const blob = new Blob([currentMarkdown], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "london-travel-guide.md";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      const originalText = document.getElementById("downloadMdBtn").textContent;
+      document.getElementById("downloadMdBtn").textContent = "✅ Downloaded!";
+      setTimeout(() => {
+        document.getElementById("downloadMdBtn").textContent = originalText;
+      }, 2000);
+    });
 
     // Resize functionality
     const resizeHandle = document.getElementById('resizeHandle');
