@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Markdown Dual View</title>
   <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <!-- PDF Exporting Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <!-- Marked (Markdown → HTML) & Highlight.js (syntax highlighting) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
@@ -13,8 +17,8 @@
     :root {
       --bg: #f8fafc;
       --fg: #1e293b;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
+      --accent: #7C3AED;
+      --accent-hover: #8B5CF6;
       --card-bg: #f1f5f9;
       --border: #e2e8f0;
       --code-bg: #f8fafc;
@@ -42,7 +46,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.5rem;
-      padding: 1rem;
+      padding: 0.2rem;
       background: white;
       border-radius: 0.75rem;
       border: 1px solid var(--border);
@@ -50,7 +54,7 @@
     }
 
     h1 {
-      font-size: 1.75rem;
+      font-size: 1.2rem;
       color: var(--accent);
       font-weight: 700;
     }
@@ -67,8 +71,6 @@
       align-items: center;
       gap: 0.25rem;
     }
-
-
 
     .panes {
       display: flex;
@@ -202,15 +204,17 @@
       line-height: 1.5;
     }
 
-    /* Plain rendered styles - completely unstyled, default browser rendering */
+    /* Plain rendered styles - A clean, readable, 'Inter' font-based view */
     .plain-rendered {
-      font-family: Times, "Times New Roman", serif;
-      line-height: 1.2;
+      font-family: serif;
+      line-height: 1.4;
       color: black;
       background: white;
       font-size: 16px;
+      padding: 1rem;
     }
 
+    /* Plain rendered styles - completely unstyled, default browser rendering */
     .plain-rendered h1,
     .plain-rendered h2,
     .plain-rendered h3,
@@ -218,7 +222,9 @@
     .plain-rendered h5,
     .plain-rendered h6 {
       font-weight: bold;
-      margin: 0.83em 0;
+      margin-top: 1.2em;
+      margin-bottom: 0.6em;
+      line-height: 1.2;
     }
 
     .plain-rendered h1 { font-size: 2em; }
@@ -229,35 +235,66 @@
     .plain-rendered h6 { font-size: 0.67em; }
 
     .plain-rendered p {
-      margin: 1em 0;
+      margin-bottom: 1em;
     }
 
     .plain-rendered blockquote {
-      margin: 1em 40px;
+      margin: 1.5em 40px;
+      padding-left: 0;
+      border-left: none;
+      color: black;
     }
 
     .plain-rendered code {
       font-family: monospace;
+      background-color: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-size: 1em;
     }
 
     .plain-rendered pre {
       font-family: monospace;
-      white-space: pre;
-      margin: 1em 0;
+      background-color: transparent;
+      padding: 0;
+      border-radius: 0;
+      white-space: pre-wrap;
+      margin: 1.5em 0;
     }
 
     .plain-rendered table {
-      border-collapse: separate;
-      border-spacing: 2px;
+      border-collapse: collapse;
+      width: auto;
+      margin: 1.5em 0;
     }
 
     .plain-rendered th,
     .plain-rendered td {
-      padding: 1px;
+      border: 1px solid black;
+      padding: 0.5em;
+      text-align: left;
+    }
+
+    .plain-rendered th {
+      background-color: transparent;
+      font-weight: bold;
     }
 
     .plain-rendered img {
-      border: 0;
+      max-width: 100%;
+      height: auto;
+      border-radius: 0;
+      margin: 1.5em 0;
+    }
+
+    .plain-rendered ul,
+    .plain-rendered ol {
+      padding-left: 2em;
+      margin-bottom: 1em;
+    }
+
+    .plain-rendered li {
+      margin-bottom: 0.25em;
     }
 
     /* Custom markdown styles - Medium-inspired clean design */
@@ -419,6 +456,26 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.07);
     }
 
+    /* Style for links in tables to appear as buttons */
+    .custom-view td a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      border: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .custom-view td a:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      border-bottom: none; /* Ensure no underline appears on hover */
+    }
+
     .custom-view a {
       color: #3b82f6;
       text-decoration: none;
@@ -427,7 +484,7 @@
     }
 
     .custom-view a:hover {
-      border-bottom-color: #3b82f6;
+      border-bottom-color: #7C3AED;
     }
 
     .custom-view img {
@@ -531,11 +588,73 @@
         transform: translateY(0);
       }
     }
+
+    .view-toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .toggle-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--fg);
+      user-select: none;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px var(--accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>📝 Markdown Dual View</h1>
+    <h1>Markdown Dual View</h1>
     <div class="stats">
       <div class="stat">
         <span>📄</span>
@@ -552,14 +671,16 @@
     </div>
   </div>
 
-
-
   <div class="panes">
     <div class="pane" id="leftPane">
         <div class="pane-header">
-          <div class="pane-tabs">
-            <button class="pane-tab active" id="rawTab">📝 Raw Markdown</button>
-            <button class="pane-tab" id="plainTab">📄 Plain Rendered</button>
+          <div class="view-toggle-container">
+            <span class="toggle-label">Raw</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="viewToggle">
+                <span class="slider"></span>
+            </label>
+            <span class="toggle-label">Rendered</span>
           </div>
           <span id="lineCount">0 lines</span>
         </div>
@@ -567,7 +688,7 @@
           <pre id="plain" class="tab-content active">🔄 Load a markdown file or click "Load Sample" to get started...</pre>
           <div id="plainRendered" class="tab-content plain-rendered">
             <em>🔄 Load a markdown file or click "Load Sample" to see the plain rendered preview...</em>
-    </div>
+          </div>
         </div>
       </div>
 
@@ -581,6 +702,7 @@
           </select>
           <div>
             <span id="headingCount" style="margin-right: 1rem; color: #64748b; font-size: 0.875rem;">0 headings</span>
+            <button id="downloadPdfBtn" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.375rem; cursor: pointer; font-weight: 500; font-size: 0.875rem; margin-right: 8px;">📄 Download .pdf</button>
             <button id="downloadMdBtn" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.375rem; cursor: pointer; font-weight: 500; font-size: 0.875rem;">💾 Download .md</button>
           </div>
         </div>
@@ -601,8 +723,7 @@
     const readTimeEl = document.getElementById('readTime');
     const lineCountEl = document.getElementById('lineCount');
     const headingCountEl = document.getElementById('headingCount');
-    const rawTab = document.getElementById('rawTab');
-    const plainTab = document.getElementById('plainTab');
+    const viewToggle = document.getElementById('viewToggle');
     const mdFileSelector = document.getElementById('mdFileSelector');
 
     let currentMarkdown = '';
@@ -1055,8 +1176,6 @@ Created with ☕, 🎯, and a healthy obsession for agent UX — June 2025
       lineCountEl.textContent = `${lines} lines`;
     }
 
-
-
     function updateViews(markdownText) {
       currentMarkdown = markdownText;
       
@@ -1114,28 +1233,19 @@ Created with ☕, 🎯, and a healthy obsession for agent UX — June 2025
       rendered.innerHTML = finalHTML;
     }
 
-
-
-    function switchLeftPaneTab(activeTab) {
-      // Remove active class from all tabs and content
-      rawTab.classList.remove('active');
-      plainTab.classList.remove('active');
-      plain.classList.remove('active');
-      plainRendered.classList.remove('active');
-      
-      // Add active class to selected tab and content
-      if (activeTab === 'raw') {
-        rawTab.classList.add('active');
-        plain.classList.add('active');
+    function switchLeftPaneView() {
+      const isRenderedView = viewToggle.checked;
+      if (isRenderedView) {
+          plain.classList.remove('active');
+          plainRendered.classList.add('active');
       } else {
-        plainTab.classList.add('active');
-        plainRendered.classList.add('active');
+          plainRendered.classList.remove('active');
+          plain.classList.add('active');
       }
     }
 
     // Event listeners
-    rawTab.addEventListener('click', () => switchLeftPaneTab('raw'));
-    plainTab.addEventListener('click', () => switchLeftPaneTab('plain'));
+    viewToggle.addEventListener('change', switchLeftPaneView);
     mdFileSelector.addEventListener('change', (e) => {
       const selectedKey = e.target.value;
       const selectedMd = markdownExamples[selectedKey];
@@ -1162,6 +1272,61 @@ Created with ☕, 🎯, and a healthy obsession for agent UX — June 2025
       setTimeout(() => {
         document.getElementById("downloadMdBtn").textContent = originalText;
       }, 2000);
+    });
+
+    document.getElementById("downloadPdfBtn").addEventListener("click", function() {
+      const { jsPDF } = window.jspdf;
+      const content = document.querySelector(".custom-view");
+
+      const btn = document.getElementById("downloadPdfBtn");
+      const originalText = btn.textContent;
+      btn.textContent = "⏳ Generating...";
+      btn.disabled = true;
+
+      html2canvas(content, {
+        scale: 2, // Higher scale for better quality
+        useCORS: true,
+        logging: false,
+        allowTaint: true
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'p',
+          unit: 'px',
+          format: 'a4'
+        });
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgHeight = canvas.height * pdfWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
+        pdf.save(`${currentDownloadName.replace('.md', '')}.pdf`);
+
+        btn.textContent = "✅ Downloaded!";
+        btn.disabled = false;
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error("PDF generation failed:", err);
+        btn.textContent = "❌ Failed";
+        btn.disabled = false;
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+      });
     });
 
     // Resize functionality
