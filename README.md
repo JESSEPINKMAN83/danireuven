@@ -1,5 +1,7 @@
 # 🚀 Markdown Dual View - React Edition
 
+Visit the live demo: [https://jessepinkman83.github.io/danireuven/](https://jessepinkman83.github.io/danireuven/)
+
 A modern, responsive markdown editor with dual-pane layout built with **React**, **TypeScript**, and **Next.js**.
 
 ## ✨ Features
@@ -62,8 +64,6 @@ The app uses a purple theme:
 Add new markdown examples to the `markdownExamples` object in `MarkdownDualView.tsx`.
 
 ## 📱 Live Demo
-
-Visit the live demo: [https://jessepinkman83.github.io/danireuven/](https://jessepinkman83.github.io/danireuven/)
 
 ## 🔄 Evolution
 
